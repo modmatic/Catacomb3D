@@ -22,7 +22,11 @@
 #define DISPLAY_HEIGHT 64
 #endif
 
-#define TARGET_FRAMERATE 30
+#ifdef MODMATIC_DOTMG_CART_SAMD21E
+  #define TARGET_FRAMERATE 60
+#else
+  #define TARGET_FRAMERATE 30
+#endif
 #define DEV_MODE 0
 
 #define INPUT_LEFT 1
