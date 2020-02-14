@@ -1,41 +1,51 @@
-#include <Arduboy2.h>
-#include <ArduboyTones.h>
+#ifdef MODMATIC_DOTMG_CART_SAMD21E
+  #include <Arduboy2DotMG.h>
+  #include <ArduboyTonesDotMG.h>
+#else
+  #include <Arduboy2.h>
+  #include <ArduboyTones.h>
+#endif
 #include "Game.h"
 #include "Draw.h"
 #include "FixedMath.h"
 #include "Platform.h"
 
-Arduboy2Base arduboy;
+#ifdef MODMATIC_DOTMG_CART_SAMD21E
+  Arduboy2 arduboy;
+#else
+  Arduboy2Base arduboy;
+#endif
+
 ArduboyTones sound(arduboy.audio.enabled);
 Sprites sprites;
 
 uint8_t Platform::GetInput()
 {
   uint8_t result = 0;
-  
+
   if(arduboy.pressed(A_BUTTON))
   {
-    result |= INPUT_A;  
+    result |= INPUT_A;
   }
   if(arduboy.pressed(B_BUTTON))
   {
-    result |= INPUT_B;  
+    result |= INPUT_B;
   }
   if(arduboy.pressed(UP_BUTTON))
   {
-    result |= INPUT_UP;  
+    result |= INPUT_UP;
   }
   if(arduboy.pressed(DOWN_BUTTON))
   {
-    result |= INPUT_DOWN;  
+    result |= INPUT_DOWN;
   }
   if(arduboy.pressed(LEFT_BUTTON))
   {
-    result |= INPUT_LEFT;  
+    result |= INPUT_LEFT;
   }
   if(arduboy.pressed(RIGHT_BUTTON))
   {
-    result |= INPUT_RIGHT;  
+    result |= INPUT_RIGHT;
   }
 
   return result;
@@ -63,7 +73,7 @@ const uint8_t topmask_[] PROGMEM = {
 const uint8_t bottommask_[] PROGMEM = {
   0x01, 0x03, 0x07, 0x0f, 0x1f, 0x3f, 0x7f, 0xff };
 
-void Platform::DrawVLine(uint8_t x, int8_t y0_, int8_t y1_, uint8_t pattern) 
+void Platform::DrawVLine(uint8_t x, int8_t y0_, int8_t y1_, uint8_t pattern)
 {
   uint8_t *screenptr = arduboy.getBuffer() + x;
 
@@ -77,7 +87,7 @@ void Platform::DrawVLine(uint8_t x, int8_t y0_, int8_t y1_, uint8_t pattern)
 
   uint8_t *page0 = screenptr + ((y0 & 0x38) << 4);
   uint8_t *page1 = screenptr + ((y1 & 0x38) << 4);
-  if (page0 == page1) 
+  if (page0 == page1)
   {
     uint8_t mask = pgm_read_byte(topmask_ + (y0 & 7))
       & pgm_read_byte(bottommask_ + (y1 & 7));
@@ -90,7 +100,7 @@ void Platform::DrawVLine(uint8_t x, int8_t y0_, int8_t y1_, uint8_t pattern)
     *page0 &= ~mask;
     *page0 |= pattern & mask;  // write top 1..8 pixels
     page0 += 128;
-    while (page0 != page1) 
+    while (page0 != page1)
     {
       *page0 = pattern;  // fill middle 8 pixels at a time
       page0 += 128;
@@ -160,19 +170,24 @@ void Platform::ExpectLoadDelay()
 
 void setup()
 {
+#ifdef MODMATIC_DOTMG_CART_SAMD21E
+  arduboy.setColorTheme(THEME_DOOM);
+  arduboy.begin();
+#else
   arduboy.boot();
   arduboy.flashlight();
   arduboy.systemButtons();
   //arduboy.bootLogo();
+#endif
   arduboy.setFrameRate(TARGET_FRAMERATE);
 
   //arduboy.audio.off();
-  
+
   //Serial.begin(9600);
 
 //  SeedRandom((uint16_t) arduboy.generateRandomSeed());
   Game::Init();
-  
+
   lastTimingSample = millis();
 }
 
@@ -182,7 +197,7 @@ void loop()
   unsigned long timingSample = millis();
   tickAccum += (timingSample - lastTimingSample);
   lastTimingSample = timingSample;
-	
+
 #if DEV_MODE
   if(arduboy.nextFrameDEV())
 #else
@@ -195,23 +210,23 @@ void loop()
 		Game::Tick();
 		tickAccum -= frameDuration;
 	}
-	
+
 	Game::Draw();
-    
+
     //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
 
 #if DEV_MODE
-	// CPU load bar graph	
+	// CPU load bar graph
 	int load = arduboy.cpuLoad();
 	uint8_t* screenPtr = arduboy.getBuffer();
-	
+
 	for(int x = 0; x < load && x < 128; x++)
 	{
 		screenPtr[x] = (screenPtr[x] & 0xf8) | 3;
 	}
 	screenPtr[100] = 0;
 #endif
-	
+
     arduboy.display(false);
   }
 }
