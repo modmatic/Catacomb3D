@@ -23,7 +23,7 @@
 #endif
 
 #ifdef MODMATIC_DOTMG_CART_SAMD21E
-  #define TARGET_FRAMERATE 60
+  #define TARGET_FRAMERATE 40
 #else
   #define TARGET_FRAMERATE 30
 #endif
