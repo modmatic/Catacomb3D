@@ -1,4 +1,4 @@
-#ifdef MODMATIC_DOTMG_CART_SAMD21E
+#ifdef DOTMG_CART_SAMD51
   #include <Arduboy2DotMG.h>
   #include <ArduboyTonesDotMG.h>
 #else
@@ -10,7 +10,7 @@
 #include "FixedMath.h"
 #include "Platform.h"
 
-#ifdef MODMATIC_DOTMG_CART_SAMD21E
+#ifdef DOTMG_CART_SAMD51
   Arduboy2 arduboy;
 #else
   Arduboy2Base arduboy;
@@ -170,7 +170,7 @@ void Platform::ExpectLoadDelay()
 
 void setup()
 {
-#ifdef MODMATIC_DOTMG_CART_SAMD21E
+#ifdef DOTMG_CART_SAMD51
   arduboy.setColorTheme(THEME_DOOM);
   arduboy.begin();
 #else

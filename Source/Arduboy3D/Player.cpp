@@ -59,7 +59,11 @@ void Player::Tick()
 	int8_t moveDelta = 0;
 	int8_t strafeDelta = 0;
 
+#if DOTMG_CART_SAMD51
+	if (input & INPUT_B)
+#else
 	if (input & INPUT_A)
+#endif
 	{
 		if (input & INPUT_LEFT)
 		{
@@ -88,7 +92,11 @@ void Player::Tick()
 	{
 		reloadTime--;
 	}
+#if DOTMG_CART_SAMD51
+	else if (input & INPUT_A)
+#else
 	else if (input & INPUT_B)
+#endif
 	{
 		Fire();
 	}
